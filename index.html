@@ -667,6 +667,96 @@ select.dtype option { background:var(--panel2); color:var(--text); }
 .hamburger span { width:18px; height:2px; background:var(--text2); border-radius:1px; transition:all .2s; }
 .overlay { display:none; position:fixed; inset:0; background:rgba(44,68,108,.2); z-index:99; }
 .overlay.show { display:block; }
+
+
+/* -- Theme Toggle -- */
+body[data-theme="dark"] {
+  --panel:#162033; --panel2:#101827;
+  --border:#2b3955; --border2:#3a4d73;
+  --text:#edf4ff; --text2:#aec2e4; --text3:#7087ad;
+  --cyan:#6fa4ff; --cyan-dim:rgba(111,164,255,.16);
+  --green:#39d7a1; --green-dim:rgba(57,215,161,.14);
+  --red:#ff7d8c; --red-dim:rgba(255,125,140,.14);
+  --amber:#f5c05c; --amber-dim:rgba(245,192,92,.14);
+  --shadow:0 18px 50px rgba(0,0,0,.30);
+  --shadow-soft:0 10px 28px rgba(0,0,0,.22);
+  background:
+    radial-gradient(circle at top left, rgba(111,164,255,.14), transparent 28%),
+    linear-gradient(180deg, #0b1220 0%, #101827 48%, #0d1423 100%);
+}
+.theme-switcher {
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+}
+.theme-toggle {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  padding:4px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:rgba(61,134,255,.08);
+}
+.theme-option {
+  border:0;
+  border-radius:12px;
+  padding:10px 6px;
+  background:transparent;
+  color:var(--text3);
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.08em;
+  cursor:pointer;
+  transition:background .15s, color .15s, box-shadow .15s;
+}
+.theme-option.active {
+  background:white;
+  color:var(--cyan);
+  box-shadow:var(--shadow-soft);
+}
+body[data-theme="dark"] .theme-option.active {
+  background:#1b2940;
+}
+body[data-theme="dark"] .sidebar,
+body[data-theme="dark"] .topbar,
+body[data-theme="dark"] .month-card,
+body[data-theme="dark"] .dash-card,
+body[data-theme="dark"] .kpi,
+body[data-theme="dark"] .chart-card,
+body[data-theme="dark"] .wblock,
+body[data-theme="dark"] .login-box {
+  background:#111a2b;
+  border-color:var(--border);
+}
+body[data-theme="dark"] .home-hero,
+body[data-theme="dark"] .month-hero {
+  background:linear-gradient(135deg, #162033 0%, #111a2b 58%, #0e1728 100%);
+  border-color:var(--border);
+}
+body[data-theme="dark"] .hero-visual,
+body[data-theme="dark"] .month-hero-visual,
+body[data-theme="dark"] .twrap,
+body[data-theme="dark"] select.dtype,
+body[data-theme="dark"] .month-nav-btn,
+body[data-theme="dark"] .back-btn,
+body[data-theme="dark"] .logout-btn,
+body[data-theme="dark"] .google-btn {
+  background:#111a2b;
+  border-color:var(--border);
+  color:var(--text2);
+}
+body[data-theme="dark"] .prog-bg,
+body[data-theme="dark"] .mc-bar,
+body[data-theme="dark"] .wbar-bg,
+body[data-theme="dark"] .wbar-outer {
+  background:#1d2a42;
+}
+body[data-theme="dark"] .ring-hole {
+  background:linear-gradient(180deg, #172238 0%, #101827 100%);
+  border-color:var(--border);
+}
+
 </style>
 </head>
 <body>
@@ -675,6 +765,12 @@ select.dtype option { background:var(--panel2); color:var(--text); }
   <div class="sidebar-logo">
     <div class="logo-slx">Saltlux</div>
     <div class="logo-sub">46H Attendance 2026</div>
+  </div>
+  <div class="theme-switcher">
+    <div class="theme-toggle" role="group" aria-label="?? ?? ??">
+      <button class="theme-option" id="themeLight" type="button" onclick="setTheme('light')" aria-pressed="false">LIGHT</button>
+      <button class="theme-option" id="themeDark" type="button" onclick="setTheme('dark')" aria-pressed="false">DARK</button>
+    </div>
   </div>
   <div class="sidebar-user">
     <div class="user-avatar" id="sideAvatar">?</div>
@@ -745,6 +841,32 @@ var TARGET_DAY = 46 / 5;
 var Y = 2026;
 var M = Math.min(12, Math.max(1, new Date().getMonth() + 1));
 var currentView = 'home';
+var THEME_KEY = 'att26_theme';
+
+function setTheme(theme) {
+  var next = theme === 'dark' ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', next);
+  try { localStorage.setItem(THEME_KEY, next); } catch(e) {}
+
+  var light = document.getElementById('themeLight');
+  var dark = document.getElementById('themeDark');
+  if (light) {
+    light.classList.toggle('active', next === 'light');
+    light.setAttribute('aria-pressed', next === 'light' ? 'true' : 'false');
+  }
+  if (dark) {
+    dark.classList.toggle('active', next === 'dark');
+    dark.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
+  }
+}
+
+function initTheme() {
+  var saved = 'light';
+  try { saved = localStorage.getItem(THEME_KEY) || 'light'; } catch(e) {}
+  setTheme(saved);
+}
+initTheme();
+
 
 function googleLogin() {
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -1355,3 +1477,4 @@ renderWeeks = function(wmap,data){
 </script>
 </body>
 </html>
+
